@@ -63,6 +63,10 @@ std::atomic<uint32_t> g_inputZoomPos;
 std::atomic<uint32_t> g_inputFocusPos;
 /// VISCA camera address.
 int g_cameraAddress = 1;
+/// Image enhancement level.
+int g_imageEnhancementLevel = 0;
+/// Zoom level.
+int g_zoomLevel = 0;
 
 
 /**
@@ -115,6 +119,17 @@ void sendInitialCommands();
  */
 void keyboardEventsProcessingFunction(int key);
 
+/**
+ * @brief Function to enhance video form thermal camera.
+ */
+void imageEnhancement(cv::Mat& bgrFrame);
+
+/**
+ * @brief Function to make digital zoom.
+ * @param bgrFrame
+ */
+void digitalZoom(cv::Mat& bgrFrame);
+
 
 
 // Entry point.
@@ -154,6 +169,8 @@ int main(void)
                        g_maxZoomPosition, fixFocusPositionChanging);
     cv::createTrackbar("Fix zoom", "VIDEO", &g_zoomPosition,
                        g_maxZoomPosition, fixZoomPositionChanging);
+    cv::createTrackbar("Enhancement level", "VIDEO", &g_imageEnhancementLevel, 100);
+    cv::createTrackbar("Digital zoom level", "VIDEO", &g_zoomLevel, 100);
 
     // Main loop.
     while (true)
@@ -165,6 +182,14 @@ int main(void)
             g_videoSource.set(cv::CAP_PROP_POS_FRAMES, 1);
             continue;
         }
+
+        // Image enhancement.
+        if (g_imageEnhancementLevel > 0)
+            imageEnhancement(frame);
+
+        // Digital zoom.
+        if (g_zoomLevel > 10)
+            digitalZoom(frame);
 
         // Draw info.
         cv::putText(frame, "1 - Combine/Separate mode",
@@ -200,7 +225,7 @@ int main(void)
         cv::putText(frame, "5 - Auto/Manual exposure",
                     cv::Point(5, 115), cv::FONT_HERSHEY_SIMPLEX, 0.5,
                     cv::Scalar(255, 255, 0));
-        cv::putText(frame, g_autoFocusModeFlag ? "AUTO" : "MANUAL",
+        cv::putText(frame, g_autoExposureModeFlag ? "AUTO" : "MANUAL",
                     cv::Point(280, 115), cv::FONT_HERSHEY_SIMPLEX, 0.5,
                     cv::Scalar(0, 0, 255));
 
@@ -622,7 +647,7 @@ void keyboardEventsProcessingFunction(int key)
     }
     break;
 
-    case 0:// 0 - Focus near/stop.
+    case 48:// 0 - Focus near/stop.
     {
         // Encode command.
         g_outputDataMutex.lock();
@@ -642,6 +667,50 @@ void keyboardEventsProcessingFunction(int key)
     default:
         break;
     }
+}
+
+
+
+// Function for image enhancement.
+void imageEnhancement(cv::Mat& bgrFrame)
+{
+    // Make OpenCV image.
+    cv::Mat image;
+
+    double alpha = 1.0 + (double)g_imageEnhancementLevel * 0.05;
+    double betta = 0.0 - (double)g_imageEnhancementLevel * 0.05;
+
+    cv::GaussianBlur(bgrFrame, image, cv::Size(0, 0), 10);
+    cv::addWeighted(bgrFrame, alpha, image, betta, 0, image);
+
+    // Copy result.
+    memcpy(bgrFrame.data, image.data, bgrFrame.size().width * bgrFrame.size().height * 3);
+}
+
+
+
+// Function to make digital zoom.
+void digitalZoom(cv::Mat& bgrFrame)
+{
+   // Check zoom level.
+   if (g_zoomLevel <= 10)
+       return;
+
+   // Calculate ROI.
+   int roiWidth = (float)bgrFrame.size().width / ((float)g_zoomLevel / 10.0f);
+   int roiHeight = (float)bgrFrame.size().height / ((float)g_zoomLevel / 10.0f);
+   int roiX = (bgrFrame.size().width - roiWidth) / 2;
+   int roiY = (bgrFrame.size().height - roiHeight) / 2;
+   cv::Rect roiRect(roiX, roiY, roiWidth, roiHeight);
+
+   // Ge ROI image.
+   cv::Mat roiImage = bgrFrame(roiRect);
+
+   // Resize ROI image.
+   cv::Mat resultImage;
+   cv::resize(roiImage, resultImage, bgrFrame.size(), cv::INTER_CUBIC);
+
+   bgrFrame = resultImage.clone();
 }
 
 

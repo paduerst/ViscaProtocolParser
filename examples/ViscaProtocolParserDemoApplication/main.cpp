@@ -67,6 +67,12 @@ int g_cameraAddress = 1;
 int g_imageEnhancementLevel = 0;
 /// Zoom level.
 int g_zoomLevel = 0;
+/// Video writer object.
+cv::VideoWriter* g_videoWriter = nullptr;
+/// Frame width.
+int g_frameWidth = 0;
+/// Frame height.
+int g_frameHeight = 0;
 
 
 /**
@@ -130,6 +136,11 @@ void imageEnhancement(cv::Mat& bgrFrame);
  */
 void digitalZoom(cv::Mat& bgrFrame);
 
+/**
+@brief Prototype of function to get current date and time string.
+*/
+std::string getDayTimeString();
+
 
 
 // Entry point.
@@ -163,14 +174,18 @@ int main(void)
     cv::Mat frame;
     cr::visca::ViscaProtocolParser protocolParser;
 
+    // Get frame size.
+    g_frameWidth = (int)g_videoSource.get(cv::CAP_PROP_FRAME_WIDTH);
+    g_frameHeight = (int)g_videoSource.get(cv::CAP_PROP_FRAME_HEIGHT);
+
     // Create windows and trackbars.
     cv::namedWindow("VIDEO", cv::WINDOW_AUTOSIZE);
-    cv::createTrackbar("Fix focus", "VIDEO", &g_focusPosition,
+    cv::createTrackbar("FOCUS", "VIDEO", &g_focusPosition,
                        g_maxZoomPosition, fixFocusPositionChanging);
-    cv::createTrackbar("Fix zoom", "VIDEO", &g_zoomPosition,
+    cv::createTrackbar("ZOOM", "VIDEO", &g_zoomPosition,
                        g_maxZoomPosition, fixZoomPositionChanging);
-    cv::createTrackbar("Enhancement level", "VIDEO", &g_imageEnhancementLevel, 100);
-    cv::createTrackbar("Digital zoom level", "VIDEO", &g_zoomLevel, 100);
+    cv::createTrackbar("CLAHE", "VIDEO", &g_imageEnhancementLevel, 100);
+    cv::createTrackbar("DZOOM", "VIDEO", &g_zoomLevel, 100);
 
     // Main loop.
     while (true)
@@ -190,6 +205,15 @@ int main(void)
         // Digital zoom.
         if (g_zoomLevel > 10)
             digitalZoom(frame);
+
+        // Write video.
+        if (g_videoWriter != nullptr)
+        {
+            g_videoWriter->write(frame);
+            cv::putText(frame, "RECORDING",
+                        cv::Point(g_frameWidth - 100, 15), cv::FONT_HERSHEY_SIMPLEX, 0.5,
+                        cv::Scalar(0, 0, 255));
+        }
 
         // Draw info.
         cv::putText(frame, "1 - Combine/Separate mode",
@@ -312,14 +336,13 @@ bool loadAndInitParams()
     // Init video source.
     if (videoSourceInitString.length() < 5)
     {
-        g_videoSource.set(cv::CAP_PROP_BUFFERSIZE, 1);
         if (!g_videoSource.open(std::stoi(videoSourceInitString)))
         {
             std::cout << "ERROR: Video source " << videoSourceInitString <<
                          " not open" << std::endl;
             return false;
         }
-        g_videoSource.set(cv::CAP_PROP_BUFFERSIZE, 1);
+
     }
     else
     {
@@ -339,7 +362,6 @@ bool loadAndInitParams()
     {
         std::cout << "ERROR: Serial port " << serialPortName <<
                      " not open" << std::endl;
-        return false;
     }
 
     return true;
@@ -365,6 +387,7 @@ void inputDataProcessingThreadFunction()
                                  g_cameraAddress);
 
     // Thread loop.
+    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
     while (true)
     {
         // Read data from serial port.
@@ -379,12 +402,12 @@ void inputDataProcessingThreadFunction()
                                              param9, param10))
             {
             case cr::visca::ViscaPackets::REPLY_CAM_ContinuousZoomPos:
-                std::cout << "DZOOM: " << param1 << "  ZOOM: " <<
-                             param2 << std::endl;
+                //std::cout << "DZOOM: " << param1 << "  ZOOM: " <<
+                //             param2 << std::endl;
                 g_inputZoomPos.store(param2);
                 break;
             case cr::visca::ViscaPackets::REPLY_CAM_ZoomPos:
-                std::cout << "ZOOM: " << param1 << std::endl;
+                //std::cout << "ZOOM: " << param1 << std::endl;
                 g_inputZoomPos.store(param1);
                 break;
             default: break;
@@ -490,6 +513,11 @@ void keyboardEventsProcessingFunction(int key)
     {
     case 27:// ESC - EXIT.
     {
+        if (g_videoWriter != nullptr)
+        {
+            g_videoWriter->release();
+        }
+
         std::cout << "EXIT" << std::endl;
         exit(0);
     }
@@ -664,6 +692,20 @@ void keyboardEventsProcessingFunction(int key)
     }
     break;
 
+    case 32:// SPACE - Start/stop recording.
+        if (g_videoWriter != nullptr)
+         {
+             g_videoWriter->release();
+             g_videoWriter = nullptr;
+         }
+         else {
+             std::string videoFileName = "record_" + getDayTimeString() + ".avi";
+             g_videoWriter = new cv::VideoWriter(videoFileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
+                                                 cv::Size(g_frameWidth, g_frameHeight), true);
+             assert(g_videoWriter != 0);
+         }
+    break;
+
     default:
         break;
     }
@@ -711,6 +753,21 @@ void digitalZoom(cv::Mat& bgrFrame)
    cv::resize(roiImage, resultImage, bgrFrame.size(), cv::INTER_CUBIC);
 
    bgrFrame = resultImage.clone();
+}
+
+
+
+// Function to get current time string
+std::string getDayTimeString()
+{
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&in_time_t), "%d_%m_%Y_%H_%M_%S");
+    std::string str = ss.str();
+
+    return str;
 }
 
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <string.h>
 #include <cstdint>
 #include <ctime>
 #include <chrono>

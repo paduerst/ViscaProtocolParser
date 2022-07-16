@@ -4,6 +4,7 @@
 #include <cstring>
 #include <thread>
 #include <chrono>
+#include <string.h>
 #include "ViscaProtocolParser.h"
 #include "SerialPort.h"
 

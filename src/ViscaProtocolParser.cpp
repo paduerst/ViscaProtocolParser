@@ -1577,6 +1577,15 @@ bool cr::visca::ViscaProtocolParser::encodeCommand(
         packetSize = 10;
         return true;
 
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_Home:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x04;
+        packet[4] = 0xFF;
+        packetSize = 5;
+        return true;
+
     case cr::visca::ViscaPackets::COMMAND_CAM_Display_On:
         packet[0] = (0x80 | (uint8_t)cameraAddress);
         packet[1] = 0x01;

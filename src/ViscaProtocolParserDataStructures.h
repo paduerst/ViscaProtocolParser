@@ -479,6 +479,9 @@ namespace visca
         /// Flicker Reduction Off. Parameters: camera_address.
         COMMAND_CAM_FlickerReduction_Off,
 
+        /// Pan-tilt drive Home. Parameters: camera_address.
+        COMMAND_PanTiltDrive_Home,
+
         /*
         INQUIRY.
         */

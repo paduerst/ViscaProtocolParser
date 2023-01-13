@@ -1577,11 +1577,175 @@ bool cr::visca::ViscaProtocolParser::encodeCommand(
         packetSize = 10;
         return true;
 
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_Up:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x03;
+        packet[7] = 0x01;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_Down:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x03;
+        packet[7] = 0x02;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_Left:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x01;
+        packet[7] = 0x03;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_Right:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x02;
+        packet[7] = 0x03;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_UpLeft:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x01;
+        packet[7] = 0x01;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_UpRight:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x02;
+        packet[7] = 0x01;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_DownLeft:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x01;
+        packet[7] = 0x02;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_DownRight:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x02;
+        packet[7] = 0x02;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_Stop:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x01;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = 0x03;
+        packet[7] = 0x03;
+        packet[8] = 0xFF;
+        packetSize = 9;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_AbsolutePosition:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x02;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = (uint8_t)(param3 >> 12) & 0x0F;
+        packet[7] = (uint8_t)(param3 >> 8) & 0x0F;
+        packet[8] = (uint8_t)(param3 >> 4) & 0x0F;
+        packet[9] = (uint8_t)param3 & 0x0F;
+        packet[10] = (uint8_t)(param4 >> 12) & 0x0F;
+        packet[11] = (uint8_t)(param4 >> 8) & 0x0F;
+        packet[12] = (uint8_t)(param4 >> 4) & 0x0F;
+        packet[13] = (uint8_t)param4 & 0x0F;
+        packet[14] = 0xFF;
+        packetSize = 15;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_RelativePosition:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x03;
+        packet[4] = (uint8_t)param1;
+        packet[5] = (uint8_t)param2;
+        packet[6] = (uint8_t)(param3 >> 12) & 0x0F;
+        packet[7] = (uint8_t)(param3 >> 8) & 0x0F;
+        packet[8] = (uint8_t)(param3 >> 4) & 0x0F;
+        packet[9] = (uint8_t)param3 & 0x0F;
+        packet[10] = (uint8_t)(param4 >> 12) & 0x0F;
+        packet[11] = (uint8_t)(param4 >> 8) & 0x0F;
+        packet[12] = (uint8_t)(param4 >> 4) & 0x0F;
+        packet[13] = (uint8_t)param4 & 0x0F;
+        packet[14] = 0xFF;
+        packetSize = 15;
+        return true;
+
     case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_Home:
         packet[0] = (0x80 | (uint8_t)cameraAddress);
         packet[1] = 0x01;
         packet[2] = 0x06;
         packet[3] = 0x04;
+        packet[4] = 0xFF;
+        packetSize = 5;
+        return true;
+
+    case cr::visca::ViscaPackets::COMMAND_PanTiltDrive_Reset:
+        packet[0] = (0x80 | (uint8_t)cameraAddress);
+        packet[1] = 0x01;
+        packet[2] = 0x06;
+        packet[3] = 0x05;
         packet[4] = 0xFF;
         packetSize = 5;
         return true;

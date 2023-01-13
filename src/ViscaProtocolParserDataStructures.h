@@ -479,8 +479,32 @@ namespace visca
         /// Flicker Reduction Off. Parameters: camera_address.
         COMMAND_CAM_FlickerReduction_Off,
 
+        /// Pan-Tilt drive Up. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_Up,
+        /// Pan-Tilt drive Down. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_Down,
+        /// Pan-Tilt drive Left. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_Left,
+        /// Pan-Tilt drive Right. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_Right,
+        /// Pan-Tilt drive UpLeft. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_UpLeft,
+        /// Pan-Tilt drive UpRight. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_UpRight,
+        /// Pan-Tilt drive DownLeft. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_DownLeft,
+        /// Pan-Tilt drive DownRight. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_DownRight,
+        /// Pan-Tilt drive Stop. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14).
+        COMMAND_PanTiltDrive_Stop,
+        /// Pan-Tilt drive Absolute position. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14), param_3 - pan position (FC90 to 0370 - center 0000), param_4 - tilt position (FED4 to 012C - center 0000).
+        COMMAND_PanTiltDrive_AbsolutePosition,
+        /// Pan-Tilt drive Relative position. Parameters: camera_address, param_1 - pan speed (01 to 18), param_2 - tilt speed (01 to 14), param_3 - pan position (FC90 to 0370 - center 0000), param_4 - tilt position (FED4 to 012C - center 0000).
+        COMMAND_PanTiltDrive_RelativePosition,
         /// Pan-tilt drive Home. Parameters: camera_address.
         COMMAND_PanTiltDrive_Home,
+        /// Pan-tilt drive Reset. Parameters: camera_address.
+        COMMAND_PanTiltDrive_Reset,
 
         /*
         INQUIRY.
